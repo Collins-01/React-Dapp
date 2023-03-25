@@ -15,18 +15,21 @@ contract Wallet {
     struct Transaction {
         address sender;
         address recipient;
-        uint amount;
+        uint256 amount;
         string message;
         uint256 timestamp;
+        address initiator;
     }
 
-    Transaction[] transactions;
+    Transaction[] public transactions;
 
     event Transfer(
         address sender,
         address recipient,
         uint256 amount,
-        string message
+        string message,
+        uint256 timestamp,
+        address initiator
     );
 
     // * Transfer Ethers
@@ -39,11 +42,35 @@ contract Wallet {
         require(balances[msg.sender] >= amount, "Insufficient balance");
         balances[msg.sender] -= amount;
         transactions.push(
-            Transaction(msg.sender, recipient, amount, message, block.timestamp)
+            Transaction(
+                msg.sender,
+                recipient,
+                amount,
+                message,
+                block.timestamp,
+                msg.sender
+            )
         );
-        emit Transfer(msg.sender, recipient, amount, message);
+        emit Transfer(
+            msg.sender,
+            recipient,
+            amount,
+            message,
+            block.timestamp,
+            msg.sender
+        );
         return true;
     }
+
+    // function findMySentTransactions(Transaction  trx) public view {
+    //     Transaction[] memory tempList;
+    //     for (uint i = 0; i < transactions.length; i++) {
+    //         if (transactions[i] == trx.initiator) {
+    //             tempList.push(trx);
+    //         }
+    //     }
+    //     return false;
+    // }
 
     function getAllMySentTransactions()
         public
